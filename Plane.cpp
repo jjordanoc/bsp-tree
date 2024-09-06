@@ -4,13 +4,19 @@
 #include "Plane.h"
 
 Point3D Polygon::getNormal() const {
-    return nullptr;
+    // use third vertex as reference point
+    auto p0 = Vector3D(vertices[0] - vertices[2]);
+    auto p1 = Vector3D(vertices[1] - vertices[2]);
+    return p0.crossProduct(p1);
 }
 
 RelationType Polygon::relationWithPlane(const Plane &plane) const {
     long posCnt = 0, negCnt = 0, zCnt = 0;
+
     for (const auto &pt: vertices) {
-        auto normalProduct = Vector3D(plane.getNormal()).dotProduct(Vector3D(getNormal()));
+        std::cout << plane.getNormal() << " " << getNormal() << std::endl;
+        std::cout <<( plane.getNormal() == getNormal()) << std::endl;
+        auto normalProduct = plane.getNormal().dotProduct(pt - getPlane().getPoint());
         if (normalProduct > 0) {
             posCnt++;
         } else if (normalProduct < 0) {
@@ -46,7 +52,7 @@ std::pair<Polygon, Polygon> Polygon::split(const Plane &plane) const {
             auto intersectionPoint = plane.intersect(Line(vertices[i], vertices[i + 1]));
             intersectionPoints.push_back(intersectionPoint);
             createsPoint[i] = true;
-            createsPoint[i+1] = true;
+            createsPoint[i + 1] = true;
         }
     }
     size_t j = 0;
@@ -59,8 +65,7 @@ std::pair<Polygon, Polygon> Polygon::split(const Plane &plane) const {
             if (createsPoint[i]) {
                 polyPtsPos.push_back(intersectionPoints[j++]);
             }
-        }
-        else {
+        } else {
             polyPtsNeg.push_back(vertices[i]);
             if (createsPoint[i]) {
                 polyPtsPos.push_back(intersectionPoints[k--]);
@@ -70,8 +75,26 @@ std::pair<Polygon, Polygon> Polygon::split(const Plane &plane) const {
     return {Polygon(polyPtsPos), Polygon(polyPtsNeg)};
 }
 
+Plane Polygon::getPlane() const {
+    return Plane(vertices[2], getNormal());
+}
+
+bool Polygon::operator==(const Polygon &other) const {
+    for (const auto &pt : vertices) {
+        if (pt != vertices[0]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 Point3D Plane::intersect(const Line &l) const {
-    return Point3D();
+    auto v = l.getUnit();
+    auto p0 = Vector3D(l.getPoint());
+    auto r0 = Vector3D(getPoint());
+    auto n = getNormal();
+    NType t = n.dotProduct(r0 - p0) / n.dotProduct(v);
+    return Point3D(p0 + (v * t));
 }
 
 

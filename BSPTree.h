@@ -8,7 +8,7 @@
 #include <vector>
 
 class BSPNode {
-private:
+public: // TODO: change
     BSPNode *front;
     BSPNode * back;
     Plane partition;
@@ -28,13 +28,15 @@ public:
     BSPNode *getFront() const { return front; }
     BSPNode *getBack() const { return back; }
     Plane getPartition() const { return partition; }
-    std::vector<Polygon> getPolygons() const { return polygons; }
+    const std::vector<Polygon> &getPolygons() const { return polygons; }
+//    bool isLeaf() const {return (front == nullptr && back == nullptr)};
 
     // Setters
     void setFront(BSPNode *front) { this->front = front; }
     void setBack(BSPNode *back) { this->back = back; }
     void setPartition(Plane partition) { this->partition = partition; }
     void setPolygons(std::vector<Polygon> polygons) { this->polygons = polygons; }
+
 
     // Detect collision with a line
     const Polygon* detectCollision(const LineSegment& traceLine) const;
@@ -65,7 +67,7 @@ public:
 
     // Getters
     BSPNode *getRoot() const { return root; }
-    size_t   getRootPolygonsCount() const { return root ? root->polygons.size() : 0; }
+//    size_t   getRootPolygonsCount() const { return root ? root->polygons.size() : 0; }
 
     // Setters
     void setRoot(BSPNode *root) { this->root = root; }
@@ -79,7 +81,7 @@ public:
     }
 
     // Get number of polygons in the tree
-    size_t getRootPolygonsCount() const { return root ? root->polygons.size() : 0; }
+    size_t getRootPolygonsCount() const { return root ? root->getPolygons().size() : 0; }
 
     // Check if the tree is empty
     bool isEmpty() const { return root == nullptr; }
