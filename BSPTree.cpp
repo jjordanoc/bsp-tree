@@ -27,7 +27,13 @@ void BSPNode::insert(const Polygon &polygon) {
             break;
         case SPLIT:
             auto [frontPart, backPart] = polygon.split(partition);
+            if (front == nullptr) {
+                front = new BSPNode(frontPart.getPlane());
+            }
             front->insert(frontPart);
+            if (back == nullptr) {
+                back = new BSPNode(backPart.getPlane());
+            }
             back->insert(backPart);
             break;
     }
