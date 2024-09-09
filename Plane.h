@@ -5,6 +5,7 @@
 #include "Point.h"
 #include "Line.h"
 #include <vector>
+#include <map>
 
 std::ostream &operator<<(std::ostream &os, const RelationType &type);
 
@@ -57,8 +58,8 @@ public:
 
     // Getters
     std::vector<Point3D> getVertices() const { return vertices; }
-
-    Point3D getNextVertex(size_t index) const { return getVertex((index + 1) % vertices.size()); }
+    size_t nextVertexIndex(size_t index) const  {return (index + 1) % vertices.size();}
+//    Point3D getNextVertex(size_t index) const { return getVertex(n); }
 
     Point3D getVertex(size_t index) const { return vertices[index]; }
 

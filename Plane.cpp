@@ -14,10 +14,9 @@ RelationType Polygon::relationWithPlane(const Plane &plane) const {
     long posCnt = 0, negCnt = 0, zCnt = 0;
 
     for (size_t i = 0; i < vertices.size(); ++i) {
-        auto pt = vertices[i];
         std::cout << plane.getNormal() << " " << getNormal() << std::endl;
         // TODO: usar otro punto para el plano, o cambiar de punto
-        auto normalProduct = plane.getNormal().dotProduct(pt - getNextVertex(i));
+        auto normalProduct = plane.getNormal().dotProduct(getVertex(i) - getVertex(nextVertexIndex(i)));
         std::cout << normalProduct << std::endl;
         if (normalProduct > 0) {
             posCnt++;
@@ -39,38 +38,53 @@ RelationType Polygon::relationWithPlane(const Plane &plane) const {
 }
 
 std::pair<Polygon, Polygon> Polygon::split(const Plane &plane) const {
-    std::vector<Point3D> intersectionPoints;
+    size_t numVertices = vertices.size();
+//    std::vector<Point3D> intersectionPoints;
+    std::map<size_t, Point3D> intersectionPoints;
     std::vector<NType> products;
-    std::vector<bool> createsPoint;
+//    std::vector<bool> createsPoint(numVertices, false);
     std::vector<Point3D> polyPtsPos, polyPtsNeg;
-    for (const auto &pt: vertices) {
-        auto normalProduct = Vector3D(plane.getNormal()).dotProduct(Vector3D(getNormal()));
+    for (size_t i = 0; i < numVertices; ++i) {
+        auto normalProduct = plane.getNormal().dotProduct(getVertex(i) - getVertex(nextVertexIndex(i)));
         products.push_back(normalProduct);
     }
 
-    for (size_t i = 0; i < vertices.size() - 1; ++i) {
+    for (size_t i = 0; i < numVertices; ++i) {
         // different signs mean plane intersection
-        if (products[i] * products[i + 1] < 0) {
-            auto intersectionPoint = plane.intersect(Line(vertices[i], vertices[i + 1]));
-            intersectionPoints.push_back(intersectionPoint);
-            createsPoint[i] = true;
-            createsPoint[i + 1] = true;
+        if (products[i] * products[nextVertexIndex(i)] < 0) {
+            auto intersectionPoint = plane.intersect(Line(getVertex(i), getVertex(nextVertexIndex(i))));
+            intersectionPoints[i] = intersectionPoint;
+            intersectionPoints[nextVertexIndex(i)] = intersectionPoint;
+//            intersectionPoints.push_back(intersectionPoint);
+//            createsPoint[i] = true;
+//            createsPoint[(i + 1) % numVertices] = true;
+        }
+        if (products[i] > 0) {
+            polyPtsPos.push_back(getVertex(i));
+            if (intersectionPoints.find(i) != intersectionPoints.end()) {
+                polyPtsPos.push_back(intersectionPoints[i]);
+            }
+        } else {
+            polyPtsNeg.push_back(getVertex(i));
+            if (intersectionPoints.find(i) != intersectionPoints.end()) {
+                polyPtsNeg.push_back(intersectionPoints[i]);
+            }
         }
     }
     size_t j = 0;
     size_t k = intersectionPoints.size() - 1;
     // create polygon with positives and other with negatives
-    for (size_t i = 0; i < vertices.size(); ++i) {
+    for (size_t i = 0; i < numVertices; ++i) {
         // iterate over positive and alternate
         if (products[i] > 0) {
-            polyPtsPos.push_back(vertices[i]);
-            if (createsPoint[i]) {
-                polyPtsPos.push_back(intersectionPoints[j++]);
+            polyPtsPos.push_back(getVertex(i));
+            if (intersectionPoints.find(i) != intersectionPoints.end()) {
+                polyPtsPos.push_back(intersectionPoints[i]);
             }
         } else {
-            polyPtsNeg.push_back(vertices[i]);
-            if (createsPoint[i]) {
-                polyPtsPos.push_back(intersectionPoints[k--]);
+            polyPtsNeg.push_back(getVertex(i));
+            if (intersectionPoints.find(i) != intersectionPoints.end()) {
+                polyPtsNeg.push_back(intersectionPoints[i]);
             }
         }
     }
