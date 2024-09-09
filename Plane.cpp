@@ -3,7 +3,7 @@
 //
 #include "Plane.h"
 
-Point3D Polygon::getNormal() const {
+Vector3D Polygon::getNormal() const {
     // use third vertex as reference point
     auto p0 = Vector3D(vertices[0] - vertices[2]);
     auto p1 = Vector3D(vertices[1] - vertices[2]);
@@ -13,10 +13,12 @@ Point3D Polygon::getNormal() const {
 RelationType Polygon::relationWithPlane(const Plane &plane) const {
     long posCnt = 0, negCnt = 0, zCnt = 0;
 
-    for (const auto &pt: vertices) {
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        auto pt = vertices[i];
         std::cout << plane.getNormal() << " " << getNormal() << std::endl;
-        std::cout <<( plane.getNormal() == getNormal()) << std::endl;
-        auto normalProduct = plane.getNormal().dotProduct(pt - getPlane().getPoint());
+        // TODO: usar otro punto para el plano, o cambiar de punto
+        auto normalProduct = plane.getNormal().dotProduct(pt - getNextVertex(i));
+        std::cout << normalProduct << std::endl;
         if (normalProduct > 0) {
             posCnt++;
         } else if (normalProduct < 0) {
@@ -27,9 +29,9 @@ RelationType Polygon::relationWithPlane(const Plane &plane) const {
     }
     if (zCnt == vertices.size()) {
         return COINCIDENT;
-    } else if (posCnt == vertices.size()) {
+    } else if (posCnt + zCnt == vertices.size()) {
         return IN_FRONT;
-    } else if (negCnt == vertices.size()) {
+    } else if (negCnt + zCnt == vertices.size()) {
         return BEHIND;
     } else {
         return SPLIT;

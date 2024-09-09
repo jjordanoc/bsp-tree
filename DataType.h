@@ -162,7 +162,7 @@ Safe<T> max(const Safe<T>& a, const Safe<T>& b) {
     return Safe<T>::max(a, b);
 }
 
-using NType = Safe<float>;
+using NType = Safe<double>;
 
 
 // Relation type
