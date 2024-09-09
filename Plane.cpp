@@ -11,13 +11,10 @@ Vector3D Polygon::getNormal() const {
 }
 
 RelationType Polygon::relationWithPlane(const Plane &plane) const {
-    long posCnt = 0, negCnt = 0, zCnt = 0;
-
+    size_t posCnt = 0, negCnt = 0, zCnt = 0;
     for (size_t i = 0; i < vertices.size(); ++i) {
-        std::cout << plane.getNormal() << " " << getNormal() << std::endl;
-        // TODO: usar otro punto para el plano, o cambiar de punto
+        // TODO: tomar en cuenta caso punto coplanar
         auto normalProduct = plane.getNormal().dotProduct(getVertex(i) - plane.getPoint());
-        std::cout << normalProduct << std::endl;
         if (normalProduct > 0) {
             posCnt++;
         } else if (normalProduct < 0) {

@@ -6,7 +6,6 @@
 void BSPNode::insert(const Polygon &polygon) {
     // determine on which side of the plane the current polygon is
     auto relation = polygon.relationWithPlane(partition);
-    auto cnt = getPolygonsCount();
     switch (relation) {
         case COINCIDENT:
             // insert in this node
@@ -42,7 +41,6 @@ void BSPNode::insert(const Polygon &polygon) {
 void BSPTree::insert(const Polygon &polygon) {
     if (root == nullptr) {
         root = new BSPNode(polygon.getPlane());
-//        root->setPartition()
     }
     root->insert(polygon);
 }

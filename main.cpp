@@ -94,14 +94,10 @@ bool verifyPolygonsInNode(BSPNode* node, const std::vector<Polygon>& allPolygons
 void testBSPTree() {
     BSPTree bspTree;
 
-    int n_polygons = 5;
+    int n_polygons = 500;
     int p_min = 0, p_max = 5;
     std::vector<Polygon> randomPolygons = generateRandomPolygons(n_polygons,p_min,p_max,p_min,p_max,p_min,p_max);
     for (const auto& polygon : randomPolygons) {
-//        std::cout << polygon << std::endl;
-//        for (const auto &pt : polygon.getVertices()) {
-//            std::cout << "Producto con normal: " << polygon.getNormal().dotProduct(pt - polygon.getPlane().getPoint()) << std::endl;
-//        }
         bspTree.insert(polygon);
     }
 
