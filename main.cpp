@@ -133,7 +133,7 @@ bool verifySubtreePolygons(BSPNode* node, const Plane& parentPlane, bool shouldB
 
     return true;
 }
-bool verifyBSPNode(BSPNode* node, const Plane* parentPlane, bool shouldBeInFront, std::unordered_set<const Polygon*>& verifiedPolygons) {
+bool verifyBSPNode(BSPNode* node, std::unordered_set<const Polygon*>& verifiedPolygons) {
     if (!node) {
         return true;
     }
@@ -160,7 +160,7 @@ bool verifyBSPNode(BSPNode* node, const Plane* parentPlane, bool shouldBeInFront
         if (!verifySubtreePolygons(node->getFront(), partition, true, verifiedPolygons)) {
             return false;
         }
-        if (!verifyBSPNode(node->getFront(), &partition, true, verifiedPolygons)) {
+        if (!verifyBSPNode(node->getFront(), verifiedPolygons)) {
             return false;
         }
     }
@@ -170,7 +170,7 @@ bool verifyBSPNode(BSPNode* node, const Plane* parentPlane, bool shouldBeInFront
         if (!verifySubtreePolygons(node->getBack(), partition, false, verifiedPolygons)) {
             return false;
         }
-        if (!verifyBSPNode(node->getBack(), &partition, false, verifiedPolygons)) {
+        if (!verifyBSPNode(node->getBack(), verifiedPolygons)) {
             return false;
         }
     }
@@ -242,7 +242,7 @@ void testBSPTree() {
     }
 
     std::unordered_set<const Polygon*> verifiedPolygons;
-    bool isValid = verifyBSPNode(bspTree.getRoot(), nullptr, true, verifiedPolygons);
+    bool isValid = verifyBSPNode(bspTree.getRoot(), verifiedPolygons);
     assert(isValid && "Error: Algunos polígonos no están correctamente ubicados en el BSP-Tree.");
 
     std::vector<Plane> usedPartitions;
