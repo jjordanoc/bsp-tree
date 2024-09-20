@@ -26,6 +26,9 @@ public:
 
     bool contains(const Line &l) const;
 
+    bool inPositiveSide(const Point3D &point) const;
+
+
     // Getters
     Point3D getPoint() const { return _p; }
 
@@ -76,6 +79,7 @@ public:
 
     // Get the relation of the polygon with a plane
     RelationType relationWithPlane(const Plane &plane) const;
+
 
     // Split the polygon by a plane
     std::pair<Polygon, Polygon> split(const Plane &plane) const;

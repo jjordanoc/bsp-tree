@@ -13,7 +13,6 @@ Vector3D Polygon::getNormal() const {
 RelationType Polygon::relationWithPlane(const Plane &plane) const {
     size_t posCnt = 0, negCnt = 0, zCnt = 0;
     for (size_t i = 0; i < vertices.size(); ++i) {
-        // TODO: tomar en cuenta caso punto coplanar
         auto normalProduct = plane.getNormal().dotProduct(getVertex(i) - plane.getPoint());
         if (normalProduct > 0) {
             posCnt++;
@@ -72,6 +71,8 @@ bool Polygon::operator==(const Polygon &other) const {
     return true;
 }
 
+
+
 Point3D Plane::intersect(const Line &l) const {
     auto v = l.getUnit();
     auto p0 = Vector3D(l.getPoint());
@@ -79,6 +80,11 @@ Point3D Plane::intersect(const Line &l) const {
     auto n = getNormal();
     NType t = n.dotProduct(r0 - p0) / n.dotProduct(v);
     return Point3D(p0 + (v * t));
+}
+
+bool Plane::inPositiveSide(const Point3D &point) const {
+    auto normalProduct = getNormal().dotProduct(point);
+    return normalProduct > 0;
 }
 
 

@@ -9,13 +9,14 @@
 
 class BSPNode {
 public: // TODO: change
+    BSPNode *parent;
     BSPNode *front;
-    BSPNode * back;
+    BSPNode *back;
     Plane partition;
     std::vector<Polygon> polygons;
 
 public:
-    BSPNode(const Plane &partition) : partition(partition), front(nullptr), back(nullptr) {}
+    BSPNode(const Plane &partition) : partition(partition), front(nullptr), back(nullptr), parent(nullptr) {}
     ~BSPNode() {
         delete front;
         delete back;
@@ -23,15 +24,20 @@ public:
 
     // Insert a polygon into the subtree (node)
     void insert(const Polygon &polygon);
+    BSPNode *visibilityOrder(const Point3D &point);
+    static BSPNode *getFirstCommonAncestor(BSPNode *node1, BSPNode *node2);
 
     // Getters
+    BSPNode *getParent() const { return parent; }
     BSPNode *getFront() const { return front; }
     BSPNode *getBack() const { return back; }
     Plane getPartition() const { return partition; }
     const std::vector<Polygon> &getPolygons() const { return polygons; }
-//    bool isLeaf() const {return (front == nullptr && back == nullptr)};
+
+    bool contains(const Point3D &pt) const;
 
     // Setters
+    void setParent(BSPNode *parent) { this->parent = parent; }
     void setFront(BSPNode *front) { this->front = front; }
     void setBack(BSPNode *back) { this->back = back; }
     void setPartition(Plane partition) { this->partition = partition; }
@@ -76,9 +82,7 @@ public:
     void insert(const Polygon &polygon);
 
     // Detect collision with a line
-    const Polygon* detectCollision(const LineSegment& traceLine) const{
-        return root ? root->detectCollision(traceLine) : nullptr;
-    }
+    const Polygon* detectCollision(const LineSegment& traceLine) const;
 
     // Get number of polygons in the tree
     size_t getRootPolygonsCount() const { return root ? root->getPolygons().size() : 0; }
